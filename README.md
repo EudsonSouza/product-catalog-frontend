@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Product Catalog Frontend (Next.js + Tailwind)
 
-## Getting Started
+<img src="public/preview.png" alt="Preview of Product Grid" width="100%"/>
+Responsive product grid built with *Next.js* (App Router) and *Tailwind CSS*, using mocked data for development.
 
-First, run the development server:
+## ✨ Features
+
+- Responsive grid layout (1–4 columns depending on screen size)
+- Search bar with instant filtering
+- Gender filter (Male, Female, Unisex)
+- “Featured only” toggle
+- Sorting options: Newest, Price ↑, Price ↓, Name
+- Product badges:
+  - **Featured** (highlighted in amber)
+  - **New** (created in last 30 days)
+- Modern UI with soft gradients, shadows, and rounded corners
+- Mocked product dataset for quick testing
+
+## 🚀 Getting Started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  page.tsx         # Main product grid page (mocked data)
+  globals.css      # Tailwind base styles
+```
 
-## Learn More
+### 4. Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js 14+** (App Router)
+- **React 18**
+- **Tailwind CSS**
+- **TypeScript**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Future Improvements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Fetch products from the backend API instead of mocked data
+- Add category names and filters
+- Product detail page (`/product/[slug]`)
+- Pagination or infinite scroll
 
-## Deploy on Vercel
+## 📝 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-sourced for portfolio/demo purposes.
