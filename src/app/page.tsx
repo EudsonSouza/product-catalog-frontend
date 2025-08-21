@@ -21,21 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { Grid3X3, Grid, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { genderLabel } from "@/lib/utils/formatters";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  categoryId: string;
-  gender: number;
-  basePrice: number;
-  isActive: boolean;
-  isFeatured: boolean;
-  createdAt: string;
-  images: string[];
-  categoryName: string;
-}
+import { Product, Gender, FALLBACK_IMAGE } from "@/lib/types";
 
 
 export default function Page() {
@@ -227,9 +213,7 @@ export default function Page() {
                 <div className="relative aspect-[4/3] overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={
-                      p.images?.[0] ?? "https://picsum.photos/seed/p/800/600"
-                    }
+                    src={p.images?.[0] ?? FALLBACK_IMAGE}
                     alt={p.name}
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
