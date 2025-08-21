@@ -20,18 +20,21 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { Grid3X3, Grid, Heart, Search, SlidersHorizontal } from "lucide-react";
-import { genderLabel } from "@/lib/utils/formatters";
+import { genderLabel, formatPrice, generateWhatsAppURL } from "@/lib/utils/formatters";
 import { Product, Gender, FALLBACK_IMAGE } from "@/lib/types";
+import { DEFAULT_MAX_PRICE, PRICE_RANGE, GRID_LAYOUTS, APP_CONFIG } from "@/lib/utils/constants";
+import { useTranslation } from "@/lib/i18n";
 
 
 export default function Page() {
+  const { t, messages } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | "all">("all");
   const [gender, setGender] = useState<string | "all">("all");
-  const [maxPrice, setMaxPrice] = useState<number>(200);
+  const [maxPrice, setMaxPrice] = useState<number>(DEFAULT_MAX_PRICE);
   const [dense, setDense] = useState(false);
 
   useEffect(() => {
@@ -47,9 +50,9 @@ export default function Page() {
         setError(null);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to fetch products"
+          err instanceof Error ? err.message : messages.states.error.fetchFailed
         );
-        console.error("Error ffetching products:", err);
+        console.error(messages.dev.fetchError, err);
       } finally {
         setLoading(false);
       }
@@ -84,10 +87,10 @@ export default function Page() {
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Catalog
+            {APP_CONFIG.NAME}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Lingerie and pajamas – redirect to WhatsApp.
+            {APP_CONFIG.DESCRIPTION}
           </p>
         </div>
 
@@ -100,7 +103,7 @@ export default function Page() {
                 aria-hidden
               />
               <Input
-                placeholder="Search products..."
+                placeholder={messages.ui.search.placeholder}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-9"
@@ -110,10 +113,10 @@ export default function Page() {
 
           <Select value={category} onValueChange={(v) => setCategory(v as any)}>
             <SelectTrigger>
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={messages.ui.filters.category.placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="all">{messages.ui.filters.category.all}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c} value={c}>
                   {c}
@@ -124,26 +127,26 @@ export default function Page() {
 
           <Select value={gender} onValueChange={(v) => setGender(v as any)}>
             <SelectTrigger>
-              <SelectValue placeholder="Gender" />
+              <SelectValue placeholder={messages.ui.filters.gender.placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="Female">Female</SelectItem>
-              <SelectItem value="Male">Male</SelectItem>
-              <SelectItem value="Unisex">Unisex</SelectItem>
+              <SelectItem value="all">{messages.ui.filters.gender.all}</SelectItem>
+              <SelectItem value="Female">{messages.ui.filters.gender.female}</SelectItem>
+              <SelectItem value="Male">{messages.ui.filters.gender.male}</SelectItem>
+              <SelectItem value="Unisex">{messages.ui.filters.gender.unisex}</SelectItem>
             </SelectContent>
           </Select>
 
           <div className="px-2">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Max price</span>
+              <span>{messages.ui.search.maxPrice}</span>
               <span>$ {maxPrice.toFixed(0)}</span>
             </div>
             <Slider
               value={[maxPrice]}
-              min={10}
-              max={300}
-              step={5}
+              min={PRICE_RANGE.MIN}
+              max={PRICE_RANGE.MAX}
+              step={PRICE_RANGE.STEP}
               onValueChange={([v]) => setMaxPrice(v)}
             />
           </div>
@@ -152,7 +155,7 @@ export default function Page() {
             <Toggle
               pressed={dense}
               onPressedChange={setDense}
-              aria-label="Density"
+              aria-label={messages.ui.labels.density}
             >
               {dense ? (
                 <Grid3X3 className="h-4 w-4" />
@@ -161,7 +164,7 @@ export default function Page() {
               )}
             </Toggle>
             <Button variant="outline" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" /> Filters
+              <SlidersHorizontal className="h-4 w-4" /> {messages.ui.filters.button}
             </Button>
           </div>
         </div>
@@ -175,7 +178,7 @@ export default function Page() {
           <div className="text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Loading products...
+              {messages.states.loading}
             </p>
           </div>
         </div>
@@ -185,7 +188,7 @@ export default function Page() {
       {error && !loading && (
         <div className="mx-auto mt-24 max-w-md text-center">
           <p className="text-lg font-semibold text-destructive">
-            Error loading products
+            {messages.states.error.title}
           </p>
           <p className="text-sm text-muted-foreground">{error}</p>
           <Button
@@ -193,7 +196,7 @@ export default function Page() {
             className="mt-4"
             onClick={() => window.location.reload()}
           >
-            Try again
+            {messages.ui.buttons.tryAgain}
           </Button>
         </div>
       )}
@@ -201,11 +204,7 @@ export default function Page() {
       {/* Grid */}
       {!loading && !error && (
         <div
-          className={
-            dense
-              ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
-              : "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          }
+          className={dense ? GRID_LAYOUTS.DENSE : GRID_LAYOUTS.STANDARD}
         >
           {filtered.map((p) => (
             <Card key={p.id} className="group overflow-hidden border-muted/50">
@@ -219,7 +218,7 @@ export default function Page() {
                     loading="lazy"
                   />
                   <div className="absolute left-2 top-2 flex gap-2">
-                    {p.isFeatured && <Badge>Featured</Badge>}
+                    {p.isFeatured && <Badge>{messages.ui.labels.featured}</Badge>}
                     <Badge variant="secondary">{p.categoryName}</Badge>
                   </div>
                 </div>
@@ -231,7 +230,7 @@ export default function Page() {
                   </h3>
                   <button
                     className="rounded-full p-1 hover:bg-muted transition"
-                    aria-label="Favorite"
+                    aria-label={messages.ui.labels.favorite}
                   >
                     <Heart className="h-4 w-4" />
                   </button>
@@ -241,7 +240,7 @@ export default function Page() {
                 </p>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-base font-bold md:text-lg">
-                    $ {p.basePrice.toFixed(2)}
+                    {formatPrice(p.basePrice)}
                   </span>
                   <Badge variant="outline" className="text-[10px] md:text-xs">
                     {genderLabel(p.gender)}
@@ -251,13 +250,11 @@ export default function Page() {
               <CardFooter className="p-4 pt-0">
                 <Button className="w-full" asChild>
                   <a
-                    href={`https://wa.me/5581999999999?text=${encodeURIComponent(
-                      `Hi! I'm interested in the product ${p.name} (slug: ${p.slug}). Could you give me more details?`
-                    )}`}
+                    href={generateWhatsAppURL(p.name, p.slug)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Contact on WhatsApp
+                    {messages.ui.buttons.contactWhatsApp}
                   </a>
                 </Button>
               </CardFooter>
@@ -269,9 +266,9 @@ export default function Page() {
       {/* Empty state */}
       {!loading && !error && filtered.length === 0 && (
         <div className="mx-auto mt-24 max-w-md text-center">
-          <p className="text-lg font-semibold">Nothing found</p>
+          <p className="text-lg font-semibold">{messages.states.empty.title}</p>
           <p className="text-sm text-muted-foreground">
-            Try adjusting the filters or search.
+            {messages.states.empty.description}
           </p>
         </div>
       )}
