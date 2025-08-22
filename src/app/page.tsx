@@ -24,6 +24,8 @@ import { genderLabel, formatPrice, generateWhatsAppURL } from "@/lib/utils/forma
 import { Product, Gender, FALLBACK_IMAGE } from "@/lib/types";
 import { DEFAULT_MAX_PRICE, PRICE_RANGE, GRID_LAYOUTS, APP_CONFIG } from "@/lib/utils/constants";
 import { useTranslation } from "@/lib/i18n";
+import { getProducts } from "@/lib/api/products";
+import { ApiException } from "@/lib/types/api";
 
 
 export default function Page() {
@@ -41,17 +43,27 @@ export default function Page() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5182/api/products");
-        if (!response.ok) {
-          throw new Error(`Failed to fetch products: ${response.status}`);
-        }
-        const data = await response.json();
-        setProducts(data);
         setError(null);
+        
+        const data = await getProducts();
+        setProducts(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : messages.states.error.fetchFailed
-        );
+        if (err instanceof ApiException) {
+          // Provide user-friendly messages based on error type
+          let userMessage = err.message;
+          if (err.status === 0) {
+            userMessage = messages.states.error.networkError;
+          } else if (err.status >= 500) {
+            userMessage = messages.states.error.serverError;
+          } else if (err.status === 408) {
+            userMessage = messages.states.error.timeout;
+          }
+          setError(`${userMessage} (${err.status})`);
+        } else {
+          setError(
+            err instanceof Error ? err.message : messages.states.error.fetchFailed
+          );
+        }
         console.error(messages.dev.fetchError, err);
       } finally {
         setLoading(false);
@@ -59,7 +71,7 @@ export default function Page() {
     };
 
     fetchProducts();
-  }, []);
+  }, [messages]);
 
   const categories = useMemo(() => {
     const unique = Array.from(new Set(products.map((p) => p.categoryName)));

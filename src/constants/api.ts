@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: "https://product-catalog-api-1t6o.onrender.com",
+  BASE_URL: "http://localhost:5182",
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 } as const;
@@ -26,5 +26,5 @@ export const HTTP_METHODS = {
 // Request Headers
 export const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
-  "Accept": "application/json",
+  Accept: "application/json",
 } as const;
