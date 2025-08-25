@@ -47,6 +47,22 @@ app/
 - **Tailwind CSS**
 - **TypeScript**
 
+### 5. Development Guidelines
+
+This project follows established best practices for Next.js and React development. For coding agents (Claude Code, Codex, etc.) and developers, please refer to our comprehensive development guidelines:
+
+📚 **[Next.js & React Best Practices](./docs/next-react-best-practices.md)**
+
+This documentation covers:
+- Project structure and file organization
+- Server vs Client Components patterns
+- State management strategies
+- Performance optimization techniques
+- Testing approaches
+- Code quality standards and naming conventions
+
+Following these guidelines ensures consistent, maintainable, and performant code across the project.
+
 ## 📦 Future Improvements
 
 - Fetch products from the backend API instead of mocked data
