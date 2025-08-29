@@ -1,13 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,14 +12,19 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
-import { Grid3X3, Grid, Heart, Search, SlidersHorizontal } from "lucide-react";
-import { genderLabel, formatPrice, generateWhatsAppURL } from "@/lib/utils/formatters";
-import { Product, Gender, FALLBACK_IMAGE } from "@/lib/types";
-import { DEFAULT_MAX_PRICE, PRICE_RANGE, GRID_LAYOUTS, APP_CONFIG } from "@/lib/utils/constants";
+import { Grid3X3, Grid, Search, SlidersHorizontal } from "lucide-react";
+import { Product } from "@/lib/types";
+import {
+  DEFAULT_MAX_PRICE,
+  PRICE_RANGE,
+  GRID_LAYOUTS,
+  APP_CONFIG,
+} from "@/lib/utils/constants";
 import { useTranslation } from "@/lib/i18n";
 import { getProducts } from "@/lib/api/products";
 import { ApiException } from "@/lib/types/api";
-
+import { ProductCard } from "@/components/features/product-catalog";
+import { genderLabel } from "@/lib/utils/formatters";
 
 export default function Page() {
   const { t, messages } = useTranslation();
@@ -44,7 +42,7 @@ export default function Page() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const data = await getProducts();
         setProducts(data);
       } catch (err) {
@@ -61,7 +59,9 @@ export default function Page() {
           setError(`${userMessage} (${err.status})`);
         } else {
           setError(
-            err instanceof Error ? err.message : messages.states.error.fetchFailed
+            err instanceof Error
+              ? err.message
+              : messages.states.error.fetchFailed
           );
         }
         console.error(messages.dev.fetchError, err);
@@ -125,10 +125,14 @@ export default function Page() {
 
           <Select value={category} onValueChange={(v) => setCategory(v as any)}>
             <SelectTrigger>
-              <SelectValue placeholder={messages.ui.filters.category.placeholder} />
+              <SelectValue
+                placeholder={messages.ui.filters.category.placeholder}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{messages.ui.filters.category.all}</SelectItem>
+              <SelectItem value="all">
+                {messages.ui.filters.category.all}
+              </SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c} value={c}>
                   {c}
@@ -139,13 +143,23 @@ export default function Page() {
 
           <Select value={gender} onValueChange={(v) => setGender(v as any)}>
             <SelectTrigger>
-              <SelectValue placeholder={messages.ui.filters.gender.placeholder} />
+              <SelectValue
+                placeholder={messages.ui.filters.gender.placeholder}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{messages.ui.filters.gender.all}</SelectItem>
-              <SelectItem value="Female">{messages.ui.filters.gender.female}</SelectItem>
-              <SelectItem value="Male">{messages.ui.filters.gender.male}</SelectItem>
-              <SelectItem value="Unisex">{messages.ui.filters.gender.unisex}</SelectItem>
+              <SelectItem value="all">
+                {messages.ui.filters.gender.all}
+              </SelectItem>
+              <SelectItem value="Female">
+                {messages.ui.filters.gender.female}
+              </SelectItem>
+              <SelectItem value="Male">
+                {messages.ui.filters.gender.male}
+              </SelectItem>
+              <SelectItem value="Unisex">
+                {messages.ui.filters.gender.unisex}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -176,7 +190,8 @@ export default function Page() {
               )}
             </Toggle>
             <Button variant="outline" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" /> {messages.ui.filters.button}
+              <SlidersHorizontal className="h-4 w-4" />{" "}
+              {messages.ui.filters.button}
             </Button>
           </div>
         </div>
@@ -215,62 +230,16 @@ export default function Page() {
 
       {/* Grid */}
       {!loading && !error && (
-        <div
-          className={dense ? GRID_LAYOUTS.DENSE : GRID_LAYOUTS.STANDARD}
-        >
-          {filtered.map((p) => (
-            <Card key={p.id} className="group overflow-hidden border-muted/50">
-              <CardHeader className="p-0">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.images?.[0] ?? FALLBACK_IMAGE}
-                    alt={p.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute left-2 top-2 flex gap-2">
-                    {p.isFeatured && <Badge>{messages.ui.labels.featured}</Badge>}
-                    <Badge variant="secondary">{p.categoryName}</Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="line-clamp-1 text-sm font-semibold md:text-base">
-                    {p.name}
-                  </h3>
-                  <button
-                    className="rounded-full p-1 hover:bg-muted transition"
-                    aria-label={messages.ui.labels.favorite}
-                  >
-                    <Heart className="h-4 w-4" />
-                  </button>
-                </div>
-                <p className="line-clamp-2 text-xs text-muted-foreground md:text-sm">
-                  {p.description}
-                </p>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-base font-bold md:text-lg">
-                    {formatPrice(p.basePrice)}
-                  </span>
-                  <Badge variant="outline" className="text-[10px] md:text-xs">
-                    {genderLabel(p.gender)}
-                  </Badge>
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button className="w-full" asChild>
-                  <a
-                    href={generateWhatsAppURL(p.name, p.slug)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {messages.ui.buttons.contactWhatsApp}
-                  </a>
-                </Button>
-              </CardFooter>
-            </Card>
+        <div className={dense ? GRID_LAYOUTS.DENSE : GRID_LAYOUTS.STANDARD}>
+          {filtered.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onFavoriteClick={(productId) => {
+                console.log("Favorite clicked for product:", productId);
+                // TODO: Implement favorite functionality in future phase
+              }}
+            />
           ))}
         </div>
       )}
