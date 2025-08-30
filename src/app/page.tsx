@@ -25,7 +25,7 @@ import { getProducts } from "@/services/products";
 import { ApiException } from "@/lib/types/api";
 import { ProductCard } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
-import { PageLoadingSkeleton } from "@/components/layout";
+import { PageLoadingSkeleton, LoadingError, NoProductsFound, SearchNoResults } from "@/components/layout";
 
 export default function Page() {
   const { t, messages } = useTranslation();
@@ -205,19 +205,10 @@ export default function Page() {
 
       {/* Error state */}
       {error && !loading && (
-        <div className="mx-auto mt-24 max-w-md text-center">
-          <p className="text-lg font-semibold text-destructive">
-            {messages.states.error.title}
-          </p>
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => window.location.reload()}
-          >
-            {messages.ui.buttons.tryAgain}
-          </Button>
-        </div>
+        <LoadingError 
+          error={error} 
+          onRetry={() => window.location.reload()} 
+        />
       )}
 
       {/* Grid */}
@@ -238,12 +229,22 @@ export default function Page() {
 
       {/* Empty state */}
       {!loading && !error && filtered.length === 0 && (
-        <div className="mx-auto mt-24 max-w-md text-center">
-          <p className="text-lg font-semibold">{messages.states.empty.title}</p>
-          <p className="text-sm text-muted-foreground">
-            {messages.states.empty.description}
-          </p>
-        </div>
+        <>
+          {query ? (
+            <SearchNoResults 
+              query={query} 
+              onClearSearch={() => setQuery("")} 
+            />
+          ) : (
+            <NoProductsFound 
+              onClearFilters={() => {
+                setCategory("all");
+                setGender("all");
+                setMaxPrice(DEFAULT_MAX_PRICE);
+              }} 
+            />
+          )}
+        </>
       )}
     </div>
   );
