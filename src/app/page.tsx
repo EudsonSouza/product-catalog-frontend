@@ -25,6 +25,7 @@ import { getProducts } from "@/services/products";
 import { ApiException } from "@/lib/types/api";
 import { ProductCard } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
+import { PageLoadingSkeleton } from "@/components/layout";
 
 export default function Page() {
   const { t, messages } = useTranslation();
@@ -200,16 +201,7 @@ export default function Page() {
       <Separator className="my-4" />
 
       {/* Loading state */}
-      {loading && (
-        <div className="flex items-center justify-center py-24">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {messages.states.loading}
-            </p>
-          </div>
-        </div>
-      )}
+      {loading && <PageLoadingSkeleton />}
 
       {/* Error state */}
       {error && !loading && (
