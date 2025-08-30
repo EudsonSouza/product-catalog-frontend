@@ -10,9 +10,18 @@ export const messages = {
 
   // Navigation and UI
   ui: {
+    navigation: {
+      home: "Home",
+      products: "All Products",
+      featured: "Featured",
+      menu: "Menu",
+      closeMenu: "Close menu",
+      openMenu: "Open menu",
+    },
     search: {
       placeholder: "Search products...",
       maxPrice: "Max price",
+      search: "Search",
     },
     filters: {
       category: {
@@ -27,31 +36,56 @@ export const messages = {
         unisex: "Unisex",
       },
       button: "Filters",
+      clearFilters: "Clear filters",
+      clearSearch: "Clear search",
     },
     buttons: {
       tryAgain: "Try again",
       contactWhatsApp: "Contact on WhatsApp",
+      retry: "Retry",
+      viewAllProducts: "View all products",
     },
     labels: {
       density: "Density",
       favorite: "Favorite",
       featured: "Featured",
     },
+    footer: {
+      description: "A modern product showcase platform designed for small businesses. Browse our collection and contact us directly via WhatsApp for purchases.",
+      madeWith: "Made with ❤️ for small businesses",
+      quickLinks: "Quick Links",
+      contact: "Contact",
+      whatsApp: "WhatsApp",
+      businessHours: "Business Hours: Mon-Fri 9AM-6PM",
+      allRightsReserved: "All rights reserved.",
+      builtWith: "Built with Next.js & TypeScript",
+    },
   },
 
   // States
   states: {
     loading: "Loading products...",
+    loadingMessage: "Loading...",
     error: {
       title: "Error loading products",
       fetchFailed: "Failed to fetch products",
       networkError: "Network error - please check your connection",
       serverError: "Server error - please try again later",
       timeout: "Request timed out - please try again",
+      somethingWentWrong: "Something went wrong",
+      errorMessage: "We encountered an error while loading the content. Please try again.",
+      connectionProblem: "Connection problem",
+      connectionDescription: "We're having trouble connecting to our servers. Please check your internet connection and try again.",
     },
     empty: {
       title: "Nothing found",
       description: "Try adjusting the filters or search.",
+      noProducts: "No products found",
+      noProductsDescription: "We couldn't find any products matching your criteria. Try adjusting your filters or search terms.",
+      noSearchResults: "No results for",
+      noSearchResultsDescription: "We couldn't find any products matching your search. Try different keywords or check for typos.",
+      noCategoryProducts: "No products in",
+      noCategoryProductsDescription: "This category doesn't have any products yet. Check back soon or browse other categories.",
     },
   },
 

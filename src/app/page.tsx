@@ -21,7 +21,7 @@ import {
   APP_CONFIG,
 } from "@/lib/utils/constants";
 import { useTranslation } from "@/lib/i18n";
-import { getProducts } from "@/lib/api/products";
+import { getProducts } from "@/services/products";
 import { ApiException } from "@/lib/types/api";
 import { ProductCard } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
@@ -94,9 +94,9 @@ export default function Page() {
   }, [products, query, category, gender, maxPrice]);
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 md:px-8 lg:px-12">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Search and Filters */}
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
             {APP_CONFIG.NAME}
