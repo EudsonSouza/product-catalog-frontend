@@ -1,5 +1,5 @@
-import { apiClient } from './client';
-import { API_ENDPOINTS } from '@/constants/api';
+import { apiClient } from './api';
+import { API_ENDPOINTS } from '@/lib/utils/constants';
 import { Product, ProductFilters } from '@/lib/types';
 import { ApiException } from '@/lib/types/api';
 

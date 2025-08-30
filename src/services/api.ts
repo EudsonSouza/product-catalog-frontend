@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
-import { API_CONFIG, DEFAULT_HEADERS } from '@/constants/api';
+import { API_CONFIG, DEFAULT_HEADERS } from '@/lib/utils/constants';
 import { ApiException } from '@/lib/types/api';
 
 // Interface for expected error response structure
