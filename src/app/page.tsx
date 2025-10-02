@@ -1,24 +1,10 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { Toggle } from "@/components/ui/toggle";
-import { Grid3X3, Grid, SlidersHorizontal } from "lucide-react";
 import { Product } from "@/lib/types";
 import {
   DEFAULT_MAX_PRICE,
-  PRICE_RANGE,
   GRID_LAYOUTS,
-  APP_CONFIG,
 } from "@/lib/utils/constants";
 import { useTranslation } from "@/lib/i18n";
 import { getProducts } from "@/services/products";
@@ -27,6 +13,7 @@ import { ProductCard } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
 import { PageLoadingSkeleton, LoadingError, NoProductsFound, SearchNoResults, Header } from "@/components/layout";
 import { SearchBar } from "@/components/features/search";
+import { FilterPanel } from "@/components/features/filters";
 
 export default function Page() {
   const { t, messages } = useTranslation();
@@ -109,77 +96,19 @@ export default function Page() {
             onChange={setQuery}
           />
 
-          <Select value={category} onValueChange={(v) => setCategory(v as any)}>
-            <SelectTrigger>
-              <SelectValue
-                placeholder={messages.ui.filters.category.placeholder}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {messages.ui.filters.category.all}
-              </SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={gender} onValueChange={(v) => setGender(v as any)}>
-            <SelectTrigger>
-              <SelectValue
-                placeholder={messages.ui.filters.gender.placeholder}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {messages.ui.filters.gender.all}
-              </SelectItem>
-              <SelectItem value="Female">
-                {messages.ui.filters.gender.female}
-              </SelectItem>
-              <SelectItem value="Male">
-                {messages.ui.filters.gender.male}
-              </SelectItem>
-              <SelectItem value="Unisex">
-                {messages.ui.filters.gender.unisex}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="px-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{messages.ui.search.maxPrice}</span>
-              <span>$ {maxPrice.toFixed(0)}</span>
-            </div>
-            <Slider
-              value={[maxPrice]}
-              min={PRICE_RANGE.MIN}
-              max={PRICE_RANGE.MAX}
-              step={PRICE_RANGE.STEP}
-              onValueChange={([v]) => setMaxPrice(v)}
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <Toggle
-              pressed={dense}
-              onPressedChange={setDense}
-              aria-label={messages.ui.labels.density}
-            >
-              {dense ? (
-                <Grid3X3 className="h-4 w-4" />
-              ) : (
-                <Grid className="h-4 w-4" />
-              )}
-            </Toggle>
-            <Button variant="outline" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" />{" "}
-              {messages.ui.filters.button}
-            </Button>
-          </div>
+          <FilterPanel
+            category={category}
+            gender={gender}
+            maxPrice={maxPrice}
+            dense={dense}
+            categories={categories}
+            onCategoryChange={setCategory}
+            onGenderChange={setGender}
+            onMaxPriceChange={setMaxPrice}
+            onDenseChange={setDense}
+            onFiltersClick={() => console.log("Filters clicked")}
+            className="col-span-full lg:col-span-4"
+          />
         </div>
       </div>
 
