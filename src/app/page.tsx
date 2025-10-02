@@ -12,7 +12,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
-import { Grid3X3, Grid, Search, SlidersHorizontal } from "lucide-react";
+import { Grid3X3, Grid, SlidersHorizontal } from "lucide-react";
 import { Product } from "@/lib/types";
 import {
   DEFAULT_MAX_PRICE,
@@ -25,7 +25,8 @@ import { getProducts } from "@/services/products";
 import { ApiException } from "@/lib/types/api";
 import { ProductCard } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
-import { PageLoadingSkeleton, LoadingError, NoProductsFound, SearchNoResults } from "@/components/layout";
+import { PageLoadingSkeleton, LoadingError, NoProductsFound, SearchNoResults, Header } from "@/components/layout";
+import { SearchBar } from "@/components/features/search";
 
 export default function Page() {
   const { t, messages } = useTranslation();
@@ -96,33 +97,17 @@ export default function Page() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Search and Filters */}
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-            {APP_CONFIG.NAME}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {APP_CONFIG.DESCRIPTION}
-          </p>
-        </div>
+      {/* Header */}
+      <Header />
 
+      {/* Search and Filters */}
+      <div className="mb-8">
         {/* Controls */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 w-full md:w-auto">
-          <div className="col-span-2 lg:col-span-2">
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
-                aria-hidden
-              />
-              <Input
-                placeholder={messages.ui.search.placeholder}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+          />
 
           <Select value={category} onValueChange={(v) => setCategory(v as any)}>
             <SelectTrigger>
