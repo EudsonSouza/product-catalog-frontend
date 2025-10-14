@@ -9,7 +9,7 @@ import {
 import { useTranslation } from "@/lib/i18n";
 import { getProducts } from "@/services/products";
 import { ApiException } from "@/lib/types/api";
-import { ProductCard } from "@/components/features/product-catalog";
+import { ProductGrid } from "@/components/features/product-catalog";
 import { genderLabel } from "@/lib/utils/formatters";
 import { PageLoadingSkeleton, LoadingError, NoProductsFound, SearchNoResults, Header } from "@/components/layout";
 import { SearchBar } from "@/components/features/search";
@@ -127,18 +127,14 @@ export default function Page() {
 
       {/* Grid */}
       {!loading && !error && (
-        <div className={dense ? GRID_LAYOUTS.DENSE : GRID_LAYOUTS.STANDARD}>
-          {filtered.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onFavoriteClick={(productId) => {
-                console.log("Favorite clicked for product:", productId);
-                // TODO: Implement favorite functionality in future phase
-              }}
-            />
-          ))}
-        </div>
+        <ProductGrid
+          products={filtered}
+          dense={dense}
+          onFavoriteClick={(productId) => {
+            console.log("Favorite clicked for product:", productId);
+            // TODO: Implement favorite functionality in future phase
+          }}
+        />
       )}
 
       {/* Empty state */}
