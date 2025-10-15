@@ -100,8 +100,14 @@ export const messages = {
 
   // WhatsApp message
   whatsApp: {
-    messageTemplate: (productName: string, productSlug: string) => 
-      `Hi! I'm interested in the product ${productName} (slug: ${productSlug}). Could you give me more details?`,
+    greeting: "Hi! I'm interested in this product:",
+    messageTemplate: (productName: string, price: string, description?: string) => {
+      let message = `Hi! I'm interested in this product:\n\n*${productName}*\nPrice: ${price}`;
+      if (description) {
+        message += `\n\n${description}`;
+      }
+      return message;
+    },
   },
 
   // Console/Dev messages
