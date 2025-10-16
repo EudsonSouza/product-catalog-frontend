@@ -1,75 +1,72 @@
-# Product Catalog Frontend (Next.js + Tailwind)
+# Product Catalog Frontend
 
-<img src="public/preview.png" alt="Preview of Product Grid" width="100%"/>
-Responsive product grid built with *Next.js* (App Router) and *Tailwind CSS*, using mocked data for development.
+Next.js + Tailwind CSS responsive product catalog with search and filters.
 
-## ✨ Features
+## Features
 
-- Responsive grid layout (1–4 columns depending on screen size)
-- Search bar with instant filtering
-- Gender filter (Male, Female, Unisex)
-- “Featured only” toggle
-- Sorting options: Newest, Price ↑, Price ↓, Name
-- Product badges:
-  - **Featured** (highlighted in amber)
-  - **New** (created in last 30 days)
-- Modern UI with soft gradients, shadows, and rounded corners
-- Mocked product dataset for quick testing
+- Responsive grid (1-4 columns)
+- Search and filtering
+- Gender filters (Male, Female, Unisex)
+- Featured products toggle
+- Sorting (Newest, Price, Name)
+- Product badges (Featured, New)
+- Modern UI with Tailwind CSS
 
-## 🚀 Getting Started
+## Tech Stack
 
-### 1. Install dependencies
+- Next.js 14+ (App Router)
+- React 18
+- TypeScript
+- Tailwind CSS
+
+## Quick Start
 
 ```bash
 npm install
-```
-
-### 2. Run the development server
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view in your browser.
+Open [http://localhost:3000](http://localhost:3000)
 
-### 3. Project Structure
+## Documentation
 
-```
-app/
-  page.tsx         # Main product grid page (mocked data)
-  globals.css      # Tailwind base styles
-```
+**Overview**
+- [Introduction](./docs/00-Overview/README.md)
+- [Vision & Objectives](./docs/00-Overview/Vision.md)
+- [Glossary](./docs/00-Overview/Glossary.md)
+- [Architecture Decisions](./docs/00-Overview/ADR.md)
 
-### 4. Tech Stack
+**Architecture**
+- [UI Structure](./docs/01-Architecture/UIStructure.md)
+- [API Integration](./docs/01-Architecture/APIIntegration.md)
+- [State Management](./docs/01-Architecture/StateManagement.md)
+- [Style Guide](./docs/01-Architecture/StyleGuide.md)
+- [Deployment](./docs/01-Architecture/Deployment.md)
 
-- **Next.js 14+** (App Router)
-- **React 18**
-- **Tailwind CSS**
-- **TypeScript**
+**Development**
+- [Setup Guide](./docs/02-Development/Setup.md)
+- [Best Practices](./docs/02-Development/BestPractices.md)
+- [Components](./docs/02-Development/Components.md)
+- [Testing](./docs/02-Development/Testing.md)
+- [Performance](./docs/02-Development/Performance.md)
 
-### 5. Development Guidelines
+**Governance**
+- [Contributing](./docs/03-Governance/Contributing.md)
+- [Code Style](./docs/03-Governance/CodeStyle.md)
+- [Roadmap](./docs/03-Governance/Roadmap.md)
 
-This project follows established best practices for Next.js and React development. For coding agents (Claude Code, Codex, etc.) and developers, please refer to our comprehensive development guidelines:
+**Related Projects**
+- [Backend Documentation](./docs/04-Links/BackendDocs.md)
+- [Shared Vision](./docs/04-Links/SharedVision.md)
 
-📚 **[Next.js & React Best Practices](./docs/next-react-best-practices.md)**
+## Related Repository
 
-This documentation covers:
-- Project structure and file organization
-- Server vs Client Components patterns
-- State management strategies
-- Performance optimization techniques
-- Testing approaches
-- Code quality standards and naming conventions
+**Backend**: [Product Catalog API](../product-catalog-api) - .NET REST API
 
-Following these guidelines ensures consistent, maintainable, and performant code across the project.
+## Development Guidelines
 
-## 📦 Future Improvements
+For coding agents and developers, see [Best Practices](./docs/02-Development/BestPractices.md) for comprehensive Next.js and React development guidelines.
 
-- Fetch products from the backend API instead of mocked data
-- Add category names and filters
-- Product detail page (`/product/[slug]`)
-- Pagination or infinite scroll
+## License
 
-## 📝 License
-
-This project is open-sourced for portfolio/demo purposes.
+Open-sourced for portfolio and educational purposes.
