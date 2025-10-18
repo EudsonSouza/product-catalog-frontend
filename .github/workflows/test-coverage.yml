@@ -1,0 +1,115 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Extract coverage percentage
+        id: coverage
+        run: |
+          # Extract total lines coverage percentage from coverage-summary.json
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+
+          # Round to 2 decimal places
+          COVERAGE=$(printf "%.2f" $COVERAGE)
+
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "Coverage: $COVERAGE%"
+
+          # Also extract other metrics for reference
+          BRANCHES=$(cat coverage/coverage-summary.json | jq -r '.total.branches.pct')
+          FUNCTIONS=$(cat coverage/coverage-summary.json | jq -r '.total.functions.pct')
+          STATEMENTS=$(cat coverage/coverage-summary.json | jq -r '.total.statements.pct')
+
+          echo "Lines: $COVERAGE%"
+          echo "Branches: $BRANCHES%"
+          echo "Functions: $FUNCTIONS%"
+          echo "Statements: $STATEMENTS%"
+
+      - name: Update coverage badge
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 565e4c073d5b222bc21b2c0584ed037b
+          filename: product-catalog-frontend-test-coverage.json
+          label: Coverage
+          message: ${{ steps.coverage.outputs.coverage }}%
+          valColorRange: ${{ steps.coverage.outputs.coverage }}
+          maxColorRange: 90
+          minColorRange: 50
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const coverage = '${{ steps.coverage.outputs.coverage }}';
+            const body = `## 📊 Test Coverage Report
+
+            Coverage: **${coverage}%**
+
+            ${coverage >= 80 ? '✅ Coverage meets the 80% threshold!' : '⚠️ Coverage is below the 80% threshold.'}
+
+            <details>
+            <summary>View detailed coverage report</summary>
+
+            The detailed coverage report is available in the workflow artifacts.
+
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=${{ steps.coverage.outputs.coverage }}
+          THRESHOLD=80
+
+          echo "Coverage: $COVERAGE%"
+          echo "Threshold: $THRESHOLD%"
+
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "::warning::Coverage ($COVERAGE%) is below threshold ($THRESHOLD%)"
+            # Uncomment the line below to fail the build if coverage is below threshold
+            # exit 1
+          else
+            echo "✅ Coverage meets the threshold!"
+          fi

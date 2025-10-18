@@ -1,5 +1,11 @@
 # Product Catalog Frontend (Next.js + Tailwind)
 
+<!-- Replace YOUR_USERNAME and YOUR_GIST_ID with actual values after setup -->
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/YOUR_USERNAME/YOUR_GIST_ID/raw/coverage-frontend.json)
+[![Test Coverage](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/Test%20Coverage/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
+[![Vitest](https://img.shields.io/badge/tested%20with-vitest-6E9F18)](https://vitest.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+
 <img src="public/preview.png" alt="Preview of Product Grid" width="100%"/>
 Responsive product grid built with *Next.js* (App Router) and *Tailwind CSS*, using mocked data for development.
 
@@ -47,7 +53,32 @@ app/
 - **Tailwind CSS**
 - **TypeScript**
 
-### 5. Development Guidelines
+### 5. Testing
+
+This project has comprehensive test coverage using Vitest and React Testing Library.
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Open interactive UI
+npm run test:ui
+```
+
+**Test Documentation:**
+- 📊 **[Testing Stack Recommendation](./docs/testing-stack-recommendation.md)** - Tools and rationale
+- 📋 **[Testing Implementation Plan](./docs/testing-implementation-plan.md)** - Roadmap to 80% coverage
+- 🔧 **[Coverage Badge Setup](./docs/coverage-badge-setup.md)** - How to configure the coverage badge
+
+**Current Coverage:** See badge above (target: 80%)
+
+### 6. Development Guidelines
 
 This project follows established best practices for Next.js and React development. For coding agents (Claude Code, Codex, etc.) and developers, please refer to our comprehensive development guidelines:
 
