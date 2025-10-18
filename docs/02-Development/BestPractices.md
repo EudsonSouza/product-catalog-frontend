@@ -1,3 +1,9 @@
+---
+title: Next.js & React Best Practices
+last_updated: 2025-10-15
+source: migrated
+---
+
 # Next.js & React Development Best Practices
 
 A comprehensive guide to modern Next.js and React development patterns, conventions, and best practices.
