@@ -1,8 +1,7 @@
 # Product Catalog Frontend (Next.js + Tailwind)
 
-<!-- Replace YOUR_USERNAME and YOUR_GIST_ID with actual values after setup -->
-![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/YOUR_USERNAME/YOUR_GIST_ID/raw/coverage-frontend.json)
-[![Test Coverage](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/Test%20Coverage/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/EudsonSouza/565e4c073d5b222bc21b2c0584ed037b/raw/product-catalog-frontend-test-coverage.json)
+[![Test Coverage](https://github.com/EudsonSouza/product-catalog-frontend/workflows/Test%20Coverage/badge.svg)](https://github.com/EudsonSouza/product-catalog-frontend/actions)
 [![Vitest](https://img.shields.io/badge/tested%20with-vitest-6E9F18)](https://vitest.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
 
