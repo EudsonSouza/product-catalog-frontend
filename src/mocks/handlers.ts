@@ -2,6 +2,16 @@ import { http, HttpResponse } from 'msw'
 import { Gender, Product } from '@/lib/types/product'
 
 const API_BASE = 'http://localhost:5182'
+const ALL_CATEGORIES = 'all'
+const NOT_FOUND_STATUS = 404
+const SERVER_ERROR_STATUS = 500
+const TIMEOUT_DELAY = 15000
+
+interface ProductFilters {
+  searchQuery?: string
+  category?: string
+  maxPrice?: string
+}
 
 // Mock data
 const mockProducts: Product[] = [
@@ -77,37 +87,104 @@ const mockProducts: Product[] = [
   },
 ]
 
+
+function matchesSearchQuery(product: Product, query: string): boolean {
+  const lowerQuery = query.toLowerCase()
+  const nameMatches = product.name.toLowerCase().includes(lowerQuery)
+  const descriptionMatches = product.description.toLowerCase().includes(lowerQuery)
+
+  return nameMatches || descriptionMatches
+}
+
+function filterBySearchQuery(products: Product[], query?: string): Product[] {
+  if (!query) return products
+
+  return products.filter(product => matchesSearchQuery(product, query))
+}
+
+function filterByCategory(products: Product[], category?: string): Product[] {
+  if (!category || category === ALL_CATEGORIES) return products
+
+  return products.filter(product => product.categoryName === category)
+}
+
+function filterByMaxPrice(products: Product[], maxPriceStr?: string): Product[] {
+  if (!maxPriceStr) return products
+
+  const maxPrice = parseFloat(maxPriceStr)
+  return products.filter(product => product.basePrice <= maxPrice)
+}
+
+function applyProductFilters(products: Product[], filters: ProductFilters): Product[] {
+  let filtered = [...products]
+
+  filtered = filterBySearchQuery(filtered, filters.searchQuery)
+  filtered = filterByCategory(filtered, filters.category)
+  filtered = filterByMaxPrice(filtered, filters.maxPrice)
+
+  return filtered
+}
+
+function extractFiltersFromUrl(url: URL): ProductFilters {
+  return {
+    searchQuery: url.searchParams.get('query') ?? undefined,
+    category: url.searchParams.get('category') ?? undefined,
+    maxPrice: url.searchParams.get('maxPrice') ?? undefined,
+  }
+}
+
+function findProductById(productId: string): Product | undefined {
+  return mockProducts.find(product => product.id === productId)
+}
+
+function createNotFoundResponse() {
+  return new HttpResponse(null, {
+    status: NOT_FOUND_STATUS,
+    statusText: 'Not Found'
+  })
+}
+
+function createServerErrorResponse() {
+  return new HttpResponse(null, {
+    status: SERVER_ERROR_STATUS,
+    statusText: 'Internal Server Error'
+  })
+}
+
+async function simulateTimeout(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, TIMEOUT_DELAY))
+}
+
 export const handlers = [
-  // GET /api/products
-  http.get(`${API_BASE}/api/products`, () => {
-    return HttpResponse.json(mockProducts)
+  // GET /api/products - with optional filtering
+  http.get(`${API_BASE}/api/products`, ({ request }) => {
+    const url = new URL(request.url)
+    const filters = extractFiltersFromUrl(url)
+    const filteredProducts = applyProductFilters(mockProducts, filters)
+
+    return HttpResponse.json(filteredProducts)
   }),
 
-  // GET /api/products/:id
+  // GET /api/products/:id - get single product
   http.get(`${API_BASE}/api/products/:id`, ({ params }) => {
-    const { id } = params
-    const product = mockProducts.find(p => p.id === id)
+    const productId = params.id as string
+    const product = findProductById(productId)
 
     if (!product) {
-      return new HttpResponse(null, {
-        status: 404,
-        statusText: 'Not Found'
-      })
+      return createNotFoundResponse()
     }
 
     return HttpResponse.json(product)
   }),
 
-  // Error simulation endpoints for testing
+  // Error simulation: 500 Internal Server Error
   http.get(`${API_BASE}/api/products/error/500`, () => {
-    return new HttpResponse(null, {
-      status: 500,
-      statusText: 'Internal Server Error'
-    })
+    return createServerErrorResponse()
   }),
 
+  // Error simulation: Timeout
   http.get(`${API_BASE}/api/products/error/timeout`, async () => {
-    await new Promise(resolve => setTimeout(resolve, 15000))
+    await simulateTimeout()
     return HttpResponse.json(mockProducts)
   }),
 ]
