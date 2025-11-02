@@ -18,6 +18,7 @@ class ApiClient {
       baseURL: API_CONFIG.BASE_URL,
       timeout: API_CONFIG.TIMEOUT,
       headers: DEFAULT_HEADERS,
+      withCredentials: true,
     });
 
     this.setupRetry();

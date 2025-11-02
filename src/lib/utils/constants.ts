@@ -2,7 +2,8 @@ import { messages } from "@/lib/i18n";
 
 // API Configuration (moved from constants/api.ts)
 export const API_CONFIG = {
-  BASE_URL: "http://localhost:5182",
+  // Use direct URL when testing with staging (bypass Next.js proxy)
+  BASE_URL: process.env.NEXT_PUBLIC_API_DIRECT_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5182",
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 } as const;
@@ -10,6 +11,12 @@ export const API_CONFIG = {
 // API Endpoints
 export const API_ENDPOINTS = {
   PRODUCTS: "/api/products",
+  AUTH: {
+    ME: "/api/auth/me",
+    LOGIN: "/api/auth/google/login",
+    CALLBACK: "/api/auth/google/callback",
+    LOGOUT: "/api/auth/logout",
+  },
 } as const;
 
 // Full API URLs
