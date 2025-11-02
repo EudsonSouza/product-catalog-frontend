@@ -1,9 +1,13 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import axiosRetry from 'axios-retry';
 import { API_CONFIG, DEFAULT_HEADERS } from '@/lib/utils/constants';
 import { ApiException } from '@/lib/types/api';
 
-// Interface for expected error response structure
+const MIN_SERVER_ERROR_STATUS = 500;
+const NETWORK_ERROR_CODE = 0;
+const NETWORK_ERROR_STATUS_TEXT = 'Network Error';
+const REQUEST_ERROR_STATUS_TEXT = 'Request Error';
+
 interface ErrorResponse {
   message?: string;
   error?: string;
@@ -25,93 +29,134 @@ class ApiClient {
     this.setupInterceptors();
   }
 
-  private setupRetry() {
-    // Configure axios-retry
+  private shouldRetryRequest(error: AxiosError): boolean {
+    const isNetworkError = axiosRetry.isNetworkOrIdempotentRequestError(error);
+    const isServerError = error.response?.status
+      ? error.response.status >= MIN_SERVER_ERROR_STATUS
+      : false;
+
+    return isNetworkError || isServerError;
+  }
+
+  private logRetryAttempt(
+    retryCount: number,
+    requestConfig: AxiosRequestConfig
+  ): void {
+    const method = requestConfig.method?.toUpperCase() || 'UNKNOWN';
+    const url = requestConfig.url || 'unknown';
+    console.log(`Retry attempt ${retryCount} for ${method} ${url}`);
+  }
+
+  private setupRetry(): void {
     axiosRetry(this.client, {
       retries: API_CONFIG.RETRY_ATTEMPTS,
       retryDelay: axiosRetry.exponentialDelay,
-      retryCondition: (error) => {
-        // Retry on network errors and 5xx server errors
-        return axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-               (error.response?.status ? error.response.status >= 500 : false);
-      },
-      onRetry: (retryCount, error, requestConfig) => {
-        console.log(`Retry attempt ${retryCount} for ${requestConfig.method?.toUpperCase()} ${requestConfig.url}`);
+      retryCondition: (error) => this.shouldRetryRequest(error),
+      onRetry: (retryCount, _error, requestConfig) => {
+        this.logRetryAttempt(retryCount, requestConfig);
       },
     });
   }
 
-  private setupInterceptors() {
-    // Request interceptor
-    this.client.interceptors.request.use(
-      (config) => {
-        // Add any request modifications here
-        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
+  private logRequest(config: InternalAxiosRequestConfig): void {
+    const method = config.method?.toUpperCase() || 'UNKNOWN';
+    const url = config.url || 'unknown';
+    console.log(`Making ${method} request to: ${url}`);
+  }
+
+  private extractErrorMessage(responseData: ErrorResponse, fallbackMessage: string): string {
+    return responseData?.message || responseData?.error || fallbackMessage;
+  }
+
+  private handleServerError(error: AxiosError): never {
+    if (!error.response) {
+      throw new Error('Server error without response');
+    }
+
+    const responseData = error.response.data as ErrorResponse;
+    const errorMessage = this.extractErrorMessage(
+      responseData,
+      error.message || 'Server error'
     );
 
-    // Response interceptor
-    this.client.interceptors.response.use(
-      (response: AxiosResponse) => {
-        // Handle successful responses
-        return response;
-      },
-      (error: AxiosError) => {
-        // Transform axios errors to our ApiException
-        if (error.response) {
-          // Server responded with error status
-          const responseData = error.response.data as ErrorResponse;
-          const errorMessage = responseData?.message || responseData?.error || error.message || 'Server error';
-          
-          throw new ApiException(
-            errorMessage,
-            error.response.status,
-            error.response.statusText
-          );
-        } else if (error.request) {
-          // Request made but no response received
-          throw new ApiException(
-            'Network error - no response from server',
-            0,
-            'Network Error'
-          );
-        } else {
-          // Something else happened
-          throw new ApiException(
-            error.message || 'Request failed',
-            0,
-            'Request Error'
-          );
-        }
-      }
+    throw new ApiException(
+      errorMessage,
+      error.response.status,
+      error.response.statusText
     );
+  }
+
+  private handleNetworkError(): never {
+    throw new ApiException(
+      'Network error - no response from server',
+      NETWORK_ERROR_CODE,
+      NETWORK_ERROR_STATUS_TEXT
+    );
+  }
+
+  private handleRequestError(error: AxiosError): never {
+    throw new ApiException(
+      error.message || 'Request failed',
+      NETWORK_ERROR_CODE,
+      REQUEST_ERROR_STATUS_TEXT
+    );
+  }
+
+  private handleRequestInterceptorError(error: unknown): Promise<never> {
+    return Promise.reject(error);
+  }
+
+  private handleResponseError(error: AxiosError): never {
+    if (error.response) {
+      this.handleServerError(error);
+    }
+
+    if (error.request) {
+      this.handleNetworkError();
+    }
+
+    this.handleRequestError(error);
+  }
+
+  private setupInterceptors(): void {
+    this.client.interceptors.request.use(
+      (config) => {
+        this.logRequest(config);
+        return config;
+      },
+      (error) => this.handleRequestInterceptorError(error)
+    );
+
+    this.client.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error: AxiosError) => this.handleResponseError(error)
+    );
+  }
+
+  private extractResponseData<T>(response: AxiosResponse<T>): T {
+    return response.data;
   }
 
   async get<T>(endpoint: string): Promise<T> {
     const response = await this.client.get<T>(endpoint);
-    return response.data;
+    return this.extractResponseData(response);
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.client.post<T>(endpoint, data);
-    return response.data;
+    return this.extractResponseData(response);
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.client.put<T>(endpoint, data);
-    return response.data;
+    return this.extractResponseData(response);
   }
 
   async delete<T>(endpoint: string): Promise<T> {
     const response = await this.client.delete<T>(endpoint);
-    return response.data;
+    return this.extractResponseData(response);
   }
 
-  // Method to get the underlying axios instance for advanced usage
   getAxiosInstance(): AxiosInstance {
     return this.client;
   }
