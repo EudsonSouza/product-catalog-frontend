@@ -11,3 +11,4 @@ export { useProducts } from './use-products';
 export { useFilters } from './use-filters';
 export { useSearch } from './use-search';
 export { useWhatsApp } from './use-whatsapp';
+export { useAuth } from '@/components/providers/auth-provider';
