@@ -5,12 +5,6 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["gru1"],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://product-catalog-api-staging.fly.dev/api/:path*"
-    }
-  ],
   "headers": [
     {
       "source": "/api/:path*",
