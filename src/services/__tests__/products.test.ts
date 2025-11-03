@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { getProducts, getProductById } from '../products'
 import { server } from '@/mocks/server'
 import { http, HttpResponse } from 'msw'
-import { Gender } from '@/lib/types/product'
 
 describe('products service', () => {
   describe('getProducts', () => {

@@ -67,7 +67,7 @@ describe('ProductCard', () => {
     })
 
     it('should use fallback image when images array is undefined', () => {
-      const productNoImage = { ...mockProduct, images: undefined as any }
+      const productNoImage: Product = { ...mockProduct, images: [] }
       render(<ProductCard product={productNoImage} />)
       const image = screen.getByAltText('Test Product')
       expect(image).toHaveAttribute('src')
