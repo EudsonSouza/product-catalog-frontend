@@ -148,11 +148,15 @@ export type MessageKey =
 // Helper function to get nested values from object using dot notation
 export const getMessage = (key: MessageKey): string => {
   const keys = key.split('.');
-  let value: any = messages;
-  
+  let value: unknown = messages;
+
   for (const k of keys) {
-    value = value?.[k];
+    if (value && typeof value === 'object' && k in value) {
+      value = (value as Record<string, unknown>)[k];
+    } else {
+      return key;
+    }
   }
-  
-  return value || key;
+
+  return typeof value === 'string' ? value : key;
 };
