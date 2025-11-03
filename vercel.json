@@ -8,7 +8,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://product-catalog-api-staging.fly.dev/:path*"
+      "destination": "https://product-catalog-api-staging.fly.dev/api/:path*"
     }
   ],
   "headers": [
