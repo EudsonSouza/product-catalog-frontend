@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { useTranslation } from '@/lib/i18n';
