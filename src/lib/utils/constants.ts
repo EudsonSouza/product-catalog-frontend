@@ -2,8 +2,8 @@ import { messages } from "@/lib/i18n";
 
 // API Configuration (moved from constants/api.ts)
 export const API_CONFIG = {
-  // Use direct URL when testing with staging (bypass Next.js proxy)
-  BASE_URL: process.env.NEXT_PUBLIC_API_DIRECT_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5182",
+  // Development: use direct URL | Production/Staging: use Next.js proxy (empty string = same-domain)
+  BASE_URL: process.env.NODE_ENV === 'development' ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5182") : '',
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 } as const;
